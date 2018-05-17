@@ -1,2 +1,3 @@
 # inquiryFund
-achive the latest statistic of selected fund automaticly
+1.配置时间与基金代码，定时查询特定时间的增降幅度，把结果发送邮件到相应的邮箱
+2.后续添加操作excel记录数据功能
