@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # _*_ coding:utf-8 _*_
-
-from datetime import date, datetime, timedelta
+from openpyxl import load_workbook
+from datetime import datetime
 import time,requests
-import smtplib,os
+import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
-
 
 #邮件的发送者和接受者
 me = "309506489@qq.com"
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
-accpter = ['1045033116@qq.com','18612404428@163.com']
+accpter = ['1045033116@qq.com','1031937206@qq.com''18612404428@163.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
@@ -29,24 +28,27 @@ def runTaskRegularTime():
 		if int(finish_time)<15:#3点后结束
 			if str(str_time_now) in timeList:#按照设定好的时间对比
 			# if 1>0:#调试用
-				mainTask()
+				matrix = doData()
+				sendEmail(matrix)
 				time.sleep(60)
 			else:
 				taskWait(str_time_now)
 		else:
-			print('闭市了\n\f')
+			print('闭市了\n')
 			time.sleep(2)
-			mainTask()
+			matrix = doData()
+			sendEmail(matrix)
+			write_excel(matrix)
 			break
 
-
-def mainTask():
-	list =[]
+#把基金返回的数据存到二维数组里
+def doData():
+	matrix =[]
 	for n in range(len(fundCode)):
-		str = inquiryRate(fundCode[n])+"\n\r"
-		list.append(str)
-	sendEmail(list)
-
+		list = inquiryRate(fundCode[n])
+		matrix.append(list)
+	# print(matrix[0])
+	return matrix
 
 def taskWait(currentTime):
 	print('current time：' + str(currentTime))
@@ -57,24 +59,23 @@ def taskWait(currentTime):
 
 #调接口查询
 def inquiryRate(shourNumber):
-	url = (" http://fundmobapi.eastmoney.com/FundMApi/FundVarietieValuationDetail.ashx?version=5.3.0&plat=Android&appType=ttjj&FCODE=%s&deviceid=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568&product=EFund&MobileKey=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568"%shourNumber)
-	r = requests.get(url, params=None)
-	# print(r.json()["Expansion"])
-	shortname=r.json()["Expansion"]["SHORTNAME"]
-	yn=float(r.json()["Expansion"]["DWJZ"])
-	tn=float(r.json()["Expansion"]["GZ"])
-	upordown=float(r.json()["Expansion"]["GSZZL"])
-	# print("_____________________")
+	try:
+		url = (" http://fundmobapi.eastmoney.com/FundMApi/FundVarietieValuationDetail.ashx?version=5.3.0&plat=Android&appType=ttjj&FCODE=%s&deviceid=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568&product=EFund&MobileKey=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568"%shourNumber)
+		r = requests.get(url, params=None)
+		# print(r.json()["Expansion"])
+		today = r.json()["Expansion"]["JZRQ"]
+		fcode = r.json()["Expansion"]["FCODE"]
+		shortname = r.json()["Expansion"]["SHORTNAME"]
+		yn = r.json()["Expansion"]["DWJZ"]
+		tn = r.json()["Expansion"]["GZ"]
+		upordown = r.json()["Expansion"]["GSZZL"]
+		# print("_____________________")
+		ex_content = [today, fcode, shortname, yn, tn, upordown]
 
-	if (upordown)>0:
-		stra = ("%s--------%s涨了,昨天净值为：%s,今天净值为：%s，涨了%s个点")%(upordown,shortname,yn,tn,upordown)
-		# print(stra)
-		return stra
-	else:
-		n = upordown.__neg__()
-		strb =("%s--------%s跌了，昨天净值为：%s,今天净值为：%s，降了%s个点")%(upordown,shortname,yn,tn,n)
-		# print(strb)
-		return strb
+		return ex_content
+	except Exception as e:
+		print('接口有问题'+str(e))
+	return
 
 
 def sendEmail(list):
@@ -82,7 +83,12 @@ def sendEmail(list):
 	msg['from'] = me
 	msg['to'] = ','.join(accpter)
 	msg['subject'] = Header("%s基金数据"%datetime.now().strftime('%H:%M'), 'utf-8')
-	mailBody = ''.join(list)
+	list1= []
+	for n in range(len(list)):
+		lista = list[n]
+		mailBody = '    '.join(lista)
+		list1.append(mailBody)
+	mailBody = '\n'.join(list1)
 	print(mailBody)
 	puretext = MIMEText(mailBody, 'plain', 'utf-8')
 	msg.attach(puretext)
@@ -95,6 +101,22 @@ def sendEmail(list):
 	except Exception as e:
 		print(str(e))
 	return
+
+#读取项目的excel，修改添加数据后保存
+def write_excel(list):
+	wb = load_workbook('myfundStatistics.xlsx')
+	sheet = wb['Sheet1']
+	n_coordinate = 0
+	for row in sheet.iter_rows():#找到空白行号
+		for cell in row:
+			# print(cell.coordinate, cell.value)
+			if cell.value is not None:
+				n_coordinate = cell.row+1
+	# print(n_coordinate)
+	for n in range(len(list)):#通过遍历给cell赋值
+		for m in range(len(list[0])):
+			sheet.cell(n_coordinate+n,m+1).value=list[n][m]
+	wb.save('myfundStatistics.xlsx')
 
 if __name__ == '__main__':
 	runTaskRegularTime()
