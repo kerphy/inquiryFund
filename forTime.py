@@ -8,11 +8,12 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 
-#邮件的发送者和接受者
-me = "309506489@qq.com"
+#邮件数据
+mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'lhiawwpunkcrbjeg'}
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
 accpter = ['1045033116@qq.com','18612404428@163.com']
+# accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
@@ -80,22 +81,22 @@ def inquiryRate(shourNumber):
 
 def sendEmail(list):
 	msg = MIMEMultipart()
-	msg['from'] = me
+	msg['from'] = mail['me']
 	msg['to'] = ','.join(accpter)
 	msg['subject'] = Header("%s基金数据,白酒%s"%(datetime.now().strftime('%H:%M'),list[0][5]), 'utf-8')#当前时间与第一个基金的涨幅
 	list1= []
 	for n in range(len(list)):
 		lista = list[n]
-		mailBody = '    '.join(lista)
-		list1.append(mailBody)
+		listb = '    '.join(lista)
+		list1.append(listb)
 	mailBody = '\n'.join(list1)
 	print(mailBody)
 	puretext = MIMEText(mailBody, 'plain', 'utf-8')
 	msg.attach(puretext)
 	try:
-		server = smtplib.SMTP_SSL('smtp.qq.com', '465')
-		server.login(me, "lhiawwpunkcrbjeg")
-		server.sendmail(me, accpter, msg.as_string())
+		server = smtplib.SMTP_SSL(mail['host'], mail['port'])
+		server.login(mail['me'], mail['pw'])
+		server.sendmail(mail['me'], accpter, msg.as_string())
 		server.quit()
 
 	except Exception as e:
