@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 me = "309506489@qq.com"
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
-accpter = ['1045033116@qq.com','1031937206@qq.com''18612404428@163.com']
+accpter = ['1045033116@qq.com','1031937206@qq.com','18612404428@163.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
