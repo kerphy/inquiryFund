@@ -12,11 +12,11 @@ from email.mime.multipart import MIMEMultipart
 me = "309506489@qq.com"
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
-accpter = ['1045033116@qq.com','1031937206@qq.com','18612404428@163.com']
+accpter = ['1045033116@qq.com','18612404428@163.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
-timeList = ['10:30','11:30','13:45','14:30','14:45','14:55']
+timeList = ['10:30','11:30','13:45','14:30','14:50']
 # timeList = ['20:07','20:09','20:11']
 #基金代码
 fundCode =['161725','000311','110022','161616','486001']
@@ -34,8 +34,8 @@ def runTaskRegularTime():
 			else:
 				taskWait(str_time_now)
 		else:
-			print('闭市了\n')
-			time.sleep(2)
+			print('闭市了\n等5分钟后再获取数据')
+			time.sleep(300)
 			matrix = doData()
 			sendEmail(matrix)
 			write_excel(matrix)
@@ -82,7 +82,7 @@ def sendEmail(list):
 	msg = MIMEMultipart()
 	msg['from'] = me
 	msg['to'] = ','.join(accpter)
-	msg['subject'] = Header("%s基金数据"%datetime.now().strftime('%H:%M'), 'utf-8')
+	msg['subject'] = Header("%s基金数据,白酒%s"%(datetime.now().strftime('%H:%M'),list[0][5]), 'utf-8')#当前时间与第一个基金的涨幅
 	list1= []
 	for n in range(len(list)):
 		lista = list[n]
