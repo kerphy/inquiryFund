@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'lhiawwpunkcrbjeg'}
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
-accpter = ['1045033116@qq.com','18612404428@163.com']
+accpter = ['1045033116@qq.com','18612404428@163.com','likelin_worm@163.com']
 # accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
@@ -20,7 +20,7 @@ waitTime = 60
 timeList = ['10:30','11:30','13:45','14:30','14:50']
 # timeList = ['20:07','20:09','20:11']
 #基金代码
-fundCode =['161725','000311','110022','161616','486001']
+fundCode =['161725','000311','110022','161616','486001','002611']
 
 def runTaskRegularTime():
 	while True:
@@ -64,7 +64,7 @@ def inquiryRate(shourNumber):
 		url = (" http://fundmobapi.eastmoney.com/FundMApi/FundVarietieValuationDetail.ashx?version=5.3.0&plat=Android&appType=ttjj&FCODE=%s&deviceid=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568&product=EFund&MobileKey=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568"%shourNumber)
 		r = requests.get(url, params=None)
 		# print(r.json()["Expansion"])
-		today = r.json()["Expansion"]["JZRQ"]
+		today = r.json()["Expansion"]["GZTIME"][0:10]#只截取到日期，不要时间
 		fcode = r.json()["Expansion"]["FCODE"]
 		shortname = r.json()["Expansion"]["SHORTNAME"]
 		yn = r.json()["Expansion"]["DWJZ"]
@@ -77,7 +77,6 @@ def inquiryRate(shourNumber):
 	except Exception as e:
 		print('接口有问题'+str(e))
 	return
-
 
 def sendEmail(list):
 	msg = MIMEMultipart()
