@@ -12,7 +12,7 @@ from email.mime.multipart import MIMEMultipart
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'lhiawwpunkcrbjeg'}
 # 多个收件人用list,单个收件人字符串
 # accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
-accpter = ['1045033116@qq.com','18612404428@163.com','likelin_worm@163.com']
+accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com']
 # accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
@@ -26,10 +26,10 @@ def runTaskRegularTime():
 	while True:
 		str_time_now = datetime.now().strftime('%H:%M')
 		finish_time = datetime.now().strftime('%H')
+		matrix = doData()
 		if int(finish_time)<15:#3点后结束
 			if str(str_time_now) in timeList:#按照设定好的时间对比
 			# if 1>0:#调试用
-				matrix = doData()
 				sendEmail(matrix)
 				time.sleep(60)
 			else:
@@ -37,7 +37,6 @@ def runTaskRegularTime():
 		else:
 			print('闭市了\n等5分钟后再获取数据')
 			time.sleep(300)
-			matrix = doData()
 			sendEmail(matrix)
 			write_excel(matrix)
 			break
@@ -46,15 +45,13 @@ def runTaskRegularTime():
 def doData():
 	matrix =[]
 	for n in range(len(fundCode)):
-		list = inquiryRate(fundCode[n])
-		matrix.append(list)
+		matrix.append(inquiryRate(fundCode[n]))
 	# print(matrix[0])
 	return matrix
 
 def taskWait(currentTime):
 	print('current time：' + str(currentTime))
 	print('process will wakes up every %s seconds because it does not arrive at the specified time' % (waitTime))
-	print ('')
 	print ('')
 	time.sleep(waitTime)
 
@@ -72,7 +69,6 @@ def inquiryRate(shourNumber):
 		upordown = r.json()["Expansion"]["GSZZL"]
 		# print("_____________________")
 		ex_content = [today, fcode, shortname, yn, tn, upordown]
-
 		return ex_content
 	except Exception as e:
 		print('接口有问题'+str(e))
@@ -85,9 +81,7 @@ def sendEmail(list):
 	msg['subject'] = Header("%s基金数据,白酒%s"%(datetime.now().strftime('%H:%M'),list[0][5]), 'utf-8')#当前时间与第一个基金的涨幅
 	list1= []
 	for n in range(len(list)):
-		lista = list[n]
-		listb = '    '.join(lista)
-		list1.append(listb)
+		list1.append('    '.join(list[n]))
 	mailBody = '\n'.join(list1)
 	print(mailBody)
 	puretext = MIMEText(mailBody, 'plain', 'utf-8')
@@ -97,7 +91,6 @@ def sendEmail(list):
 		server.login(mail['me'], mail['pw'])
 		server.sendmail(mail['me'], accpter, msg.as_string())
 		server.quit()
-
 	except Exception as e:
 		print(str(e))
 	return
