@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 import os
+from git import Repo
 
 #邮件数据
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'qisgaudsxbunbhef'}
@@ -40,9 +41,10 @@ def runTaskRegularTime():
 				taskWait(str_time_now)
 		else:
 			print('闭市了\n等5分钟后再获取数据')
-			time.sleep(300)
+			time.sleep(900)
 			sendEmail(matrix)
 			write_excel(matrix)
+			pushExcel()
 			break
 
 #把基金返回的数据存到二维数组里
@@ -114,6 +116,17 @@ def write_excel(list):
 		for m in range(len(list[0])):
 			sheet.cell(n_coordinate+n,m+1).value=list[n][m]
 	wb.save(excel_path)
+
+#push到github
+def	pushExcel():
+	repo = Repo(base_path)
+	remote = repo.remote()
+	repo.git.checkout()
+	index = repo.index
+	# index.add(['myGit.py'])
+	index.add(['myfundStatistics.xlsx'])
+	index.commit('pushed by GitPython')
+	remote.push()
 
 if __name__ == '__main__':
 	runTaskRegularTime()
