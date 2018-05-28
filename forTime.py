@@ -31,17 +31,18 @@ def runTaskRegularTime():
 	while True:
 		str_time_now = datetime.now().strftime('%H:%M')
 		finish_time = datetime.now().strftime('%H')
-		matrix = doData()
 		if int(finish_time)<15:#3点后结束
 			if str(str_time_now) in timeList:#按照设定好的时间对比
 			# if 1>0:#调试用
-				sendEmail(matrix)
-				time.sleep(60)
+				sendEmail(doData())
+				time.sleep(waitTime)
 			else:
 				taskWait(str_time_now)
 		else:
-			print('闭市了\n等5分钟后再获取数据')
-			time.sleep(900)
+			waitTime2 = 900
+			print('闭市了\n等%s分钟后再获取数据'%(waitTime2/60))
+			time.sleep(waitTime2)
+			matrix = doData()
 			sendEmail(matrix)
 			write_excel(matrix)
 			pushExcel()
@@ -59,6 +60,7 @@ def taskWait(currentTime):
 	print('current time：' + str(currentTime))
 	print('process will wakes up every %s seconds because it does not arrive at the specified time' % (waitTime))
 	print ('')
+	print('')
 	time.sleep(waitTime)
 
 #调接口查询
