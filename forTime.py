@@ -13,19 +13,17 @@ from git import Repo
 #邮件数据
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'qisgaudsxbunbhef'}
 # 多个收件人用list,单个收件人字符串
-# accpter = ["1045033116@qq.com","309506489@qq.com","1031937206@qq.com"]
 accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com']
 # accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
 timeList = ['11:30','13:45','14:45']
-# timeList = ['20:07','20:09','20:11']
 #基金代码
-fundCode =['161725','000311','110022','161616','486001','002611']
+fundCode =['161725','000311','110022','161616','486001','001629','002611']
 #路径
-base_path = os.path.dirname(os.path.abspath(__file__))
-excel_path = os.path.abspath(base_path+'\myfundStatistics.xlsx')
+base_path = str(os.getcwd()).replace("\\", "/")
+excel_path = base_path+'/myfundStatistics2.xlsx'
 
 def runTaskRegularTime():
 	while True:
