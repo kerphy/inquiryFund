@@ -23,7 +23,7 @@ timeList = ['11:30','13:45','14:45']
 fundCode =['161725','000311','110022','161616','486001','001629','002611']
 #路径
 base_path = str(os.getcwd()).replace("\\", "/")
-excel_path = base_path+'/myfundStatistics2.xlsx'
+excel_path = base_path+'/myfundStatistics.xlsx'
 
 def runTaskRegularTime():
 	while True:
