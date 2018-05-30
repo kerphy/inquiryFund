@@ -7,7 +7,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
-import os
+import os,platform
 from git import Repo
 
 #邮件数据
@@ -20,7 +20,7 @@ waitTime = 60
 #需要定时监测的时间点
 timeList = ['11:30','13:45','14:45']
 #基金代码
-fundCode =['161725','000311','110022','161616','486001','001629','002611']
+fundCode =['161725','000311','110022','161616','486001','001629','002611','502048']
 #路径
 base_path = str(os.getcwd()).replace("\\", "/")
 excel_path = base_path+'/myfundStatistics.xlsx'
@@ -37,7 +37,11 @@ def runTaskRegularTime():
 			else:
 				taskWait(str_time_now)
 		else:
-			waitTime2 = 900
+			sys = platform.system()
+			if sys == "Windows":
+				waitTime2 = 900
+			else :
+				waitTime2 = 300
 			print('闭市了\n等%s分钟后再获取数据'%(waitTime2/60))
 			time.sleep(waitTime2)
 			matrix = doData()
@@ -123,7 +127,6 @@ def	pushExcel():
 	remote = repo.remote()
 	repo.git.checkout()
 	index = repo.index
-	# index.add(['myGit.py'])
 	index.add(['myfundStatistics.xlsx'])
 	index.commit('pushed by GitPython')
 	remote.push()

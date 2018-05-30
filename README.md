@@ -4,3 +4,8 @@
 2.添加了持续写入excel功能
 
 3.最新数据通过GitPython推到github
+
+
+4.兼容了linux和windows路径
+
+5.判断运行的系统进行不同的操作
