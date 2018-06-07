@@ -5,6 +5,7 @@ from datetime import datetime
 import time,requests
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 import os,platform
@@ -13,12 +14,12 @@ from git import Repo
 #邮件数据
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'qisgaudsxbunbhef'}
 # 多个收件人用list,单个收件人字符串
-accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com']
+accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com','evertop_lias@163.com','Zhangdan0525@outlook.com','ericforever@dingtalk.com']
 # accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
 #需要定时监测的时间点
-timeList = ['11:30','13:45','14:45']
+timeList = ['10:30','11:30','13:45','14:45']
 #基金代码
 fundCode =['161725','000311','110022','161616','486001','001629','002611','502048']
 #路径
@@ -32,7 +33,7 @@ def runTaskRegularTime():
 		if int(finish_time)<15:#3点后结束
 			if str(str_time_now) in timeList:#按照设定好的时间对比
 			# if 1>0:#调试用
-				sendEmail(doData())
+				sendEmail(doData(),False)
 				time.sleep(waitTime)
 			else:
 				taskWait(str_time_now)
@@ -45,7 +46,7 @@ def runTaskRegularTime():
 			print('闭市了\n等%s分钟后再获取数据'%(waitTime2/60))
 			time.sleep(waitTime2)
 			matrix = doData()
-			sendEmail(matrix)
+			sendEmail(matrix,True)
 			write_excel(matrix)
 			pushExcel()
 			break
@@ -84,7 +85,7 @@ def inquiryRate(shortNumber):
 		print('接口有问题'+str(e))
 	return
 
-def sendEmail(list):
+def sendEmail(list,attach):
 	msg = MIMEMultipart()
 	msg['from'] = mail['me']
 	msg['to'] = ','.join(accpter)
@@ -92,10 +93,16 @@ def sendEmail(list):
 	list1= []
 	for n in range(len(list)):
 		list1.append('    '.join(list[n]))
-	mailBody = '\n'.join(list1)
+	mailTitle = '日期            基金代码      基金名              目前净值   开盘净值     涨跌幅度%\n'
+	mailContent = '\n'.join(list1)
+	mailBody = mailTitle+mailContent
 	print(mailBody)
 	puretext = MIMEText(mailBody, 'plain', 'utf-8')
 	msg.attach(puretext)
+	if attach:
+		excel_msg = MIMEApplication(open(excel_path, 'rb').read())
+		excel_msg.add_header('Content-Disposition', 'attachment', filename='statistics.xlsx')
+		msg.attach(excel_msg)
 	try:
 		server = smtplib.SMTP_SSL(mail['host'], mail['port'])
 		server.login(mail['me'], mail['pw'])
