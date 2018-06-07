@@ -93,7 +93,7 @@ def sendEmail(list,attach):
 	list1= []
 	for n in range(len(list)):
 		list1.append('    '.join(list[n]))
-	mailTitle = '日期            基金代码      基金名              目前净值   开盘净值     涨跌幅度%\n'
+	mailTitle = '日期              基金代码         基金名                开盘净值   目前净值     涨跌幅度%\n'
 	mailContent = '\n'.join(list1)
 	mailBody = mailTitle+mailContent
 	print(mailBody)
