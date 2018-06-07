@@ -46,8 +46,8 @@ def runTaskRegularTime():
 			print('闭市了\n等%s分钟后再获取数据'%(waitTime2/60))
 			time.sleep(waitTime2)
 			matrix = doData()
-			sendEmail(matrix,True)
 			write_excel(matrix)
+			sendEmail(matrix,True)
 			pushExcel()
 			break
 
