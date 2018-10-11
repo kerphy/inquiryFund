@@ -14,7 +14,7 @@ from git import Repo
 #邮件数据
 mail = {'me':'309506489@qq.com','host':'smtp.qq.com','port':'465','pw':'qisgaudsxbunbhef'}
 # 多个收件人用list,单个收件人字符串
-accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com','evertop_lias@163.com','Zhangdan0525@outlook.com','ericforever@dingtalk.com']
+accpter = ['1045033116@qq.com','18612404428@163.com','likelin_work@163.com','Zhangdan0525@outlook.com','ericforever@dingtalk.com']
 # accpter = ['1045033116@qq.com']
 #每次循环等待间隔时间,默认60秒程序唤醒一次
 waitTime = 60
@@ -40,9 +40,10 @@ def runTaskRegularTime():
 		else:
 			sys = platform.system()
 			if sys == "Windows":
-				waitTime2 = 900
-			else :
 				waitTime2 = 300
+				# waitTime2 = 1
+			else :
+				waitTime2 = 120
 			print('闭市了\n等%s分钟后再获取数据'%(waitTime2/60))
 			time.sleep(waitTime2)
 			matrix = doData()
@@ -70,7 +71,8 @@ def taskWait(currentTime):
 def inquiryRate(shortNumber):
 	try:
 		url = (" http://fundmobapi.eastmoney.com/FundMApi/FundVarietieValuationDetail.ashx?version=5.3.0&plat=Android&appType=ttjj&FCODE=%s&deviceid=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568&product=EFund&MobileKey=e19655bcbef4c4b362d908f8bcbdd67f||946596830144568" % shortNumber)
-		r = requests.get(url, params=None)
+		headers = {'Connection': 'close', }
+		r = requests.get(url, params=None,headers = headers)
 		# print(r.json()["Expansion"])
 		today = r.json()["Expansion"]["GZTIME"][0:10]#只截取到日期，不要时间
 		fcode = r.json()["Expansion"]["FCODE"]
@@ -79,7 +81,7 @@ def inquiryRate(shortNumber):
 		tn = r.json()["Expansion"]["GZ"]
 		upordown = r.json()["Expansion"]["GSZZL"]
 		# print("_____________________")
-		ex_content = [today, fcode, shortname, yn, tn, upordown]
+		ex_content = [today, fcode, shortname, yn, tn, upordown] 
 		return ex_content
 	except Exception as e:
 		print('接口有问题'+str(e))
