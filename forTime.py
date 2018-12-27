@@ -54,7 +54,7 @@ def runTaskRegularTime():
 
 #把基金返回的数据存到二维数组里
 def doData():
-	matrix =[]
+	matrix = []
 	for n in range(len(fundCode)):
 		matrix.append(inquiryRate(fundCode[n]))
 	# print(matrix[0])
