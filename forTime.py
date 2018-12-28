@@ -61,9 +61,9 @@ def doData():
 	return matrix
 
 def taskWait(currentTime):
-	print('current time：' + str(currentTime))
-	print('process will wakes up every %s seconds because it does not arrive at the specified time' % (waitTime))
-	print ('')
+	# print('current time：' + str(currentTime))
+	# 	# print('process will wakes up every %s seconds because it does not arrive at the specified time' % (waitTime))
+	# 	# print ('')
 	print('')
 	time.sleep(waitTime)
 
