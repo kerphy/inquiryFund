@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+import datetime
 
 # 处理乱码
 matplotlib.rcParams['font.sans-serif'] = ['SimHei']
@@ -73,7 +74,9 @@ def get_fund(code, start_date, end_date, page=1, per=20):
     return fund_df
 
 if __name__ == '__main__':
-    fund_df = get_fund('050026' ,start_date='2020-02-01',end_date='2020-06-01')
+    today = datetime.date.today()
+    startday=today-datetime.timedelta(days=30)
+    fund_df = get_fund('501058' ,start_date=startday.isoformat(),end_date=today.isoformat())
     print(fund_df)
     fig, axes = plt.subplots(nrows=2, ncols=1)
     fund_df[['单位净值', '累计净值']].plot(ax=axes[0])
